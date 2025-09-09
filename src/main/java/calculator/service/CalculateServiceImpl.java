@@ -1,29 +1,20 @@
 package calculator.service;
 
-import calculator.domain.CalcElement;
+import calculator.domain.Calculation.CalculationQueue;
+import calculator.domain.Calculation.CalculationResult;
+import calculator.domain.rawinput.Formula;
 import calculator.dto.CalculationRequest;
 import calculator.dto.CalculationResponse;
-import calculator.service.parse.RequestParseService;
-import java.util.Queue;
 
 public class CalculateServiceImpl implements CalculateService {
 
-    private final RequestParseService requestParseService;
-    private final CalcStrategy calcStrategy;
-
-    public CalculateServiceImpl(RequestParseService requestParseService, CalcStrategy calcStrategy) {
-        this.requestParseService = requestParseService;
-        this.calcStrategy = calcStrategy;
-    }
-
     @Override
-    public CalculationResponse placeOrder(CalculationRequest request) {
-        Queue<CalcElement> calcElements = requestParseService.parse(request);
-        return CalculationResponse.from(calculateResult(calcElements));
-    }
+    public CalculationResponse calculate(CalculationRequest request) {
+        Formula formula = Formula.from(request.orderString());
 
-    private Long calculateResult(Queue<CalcElement> calcElements) {
-        // TODO : 계산 전략 개발
-        return calcStrategy.calcFrom(calcElements);
+        CalculationQueue calculationQueue = CalculationQueue.from(formula.extractActualFormula(), formula.extractDelimiters());
+        CalculationResult calculateResult = calculationQueue.calculate();
+
+        return CalculationResponse.from(calculateResult.getValue());
     }
 }

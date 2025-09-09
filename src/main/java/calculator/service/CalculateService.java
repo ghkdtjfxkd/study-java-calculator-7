@@ -5,5 +5,5 @@ import calculator.dto.CalculationResponse;
 
 @FunctionalInterface
 public interface CalculateService {
-    CalculationResponse placeOrder(CalculationRequest request);
+    CalculationResponse calculate(CalculationRequest request);
 }
